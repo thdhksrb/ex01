@@ -20,7 +20,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.NoSuchElementException;
 
-@RestController              //메소드의 모든 리턴값은 jsp/Thymeleaf 전송되는 것이 아니라 JSON 이나 XML 로 처리된다.
+@RestController
 @RequestMapping("/replies")
 @Log4j2
 @RequiredArgsConstructor

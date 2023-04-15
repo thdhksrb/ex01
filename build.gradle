@@ -12,7 +12,7 @@ plugins {
     id 'java'
 }
 
-group = 'com.multicampus'
+group = 'org.zerock'
 version = '0.0.1-SNAPSHOT'
 sourceCompatibility = '11'
 
@@ -61,6 +61,8 @@ dependencies {
 
     implementation 'io.springfox:springfox-boot-starter:3.0.0'
     implementation 'io.springfox:springfox-swagger-ui:3.0.0'
+
+    implementation 'net.coobird:thumbnailator:0.4.16'
 
 }
 

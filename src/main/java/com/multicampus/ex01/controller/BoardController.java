@@ -32,6 +32,9 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class BoardController {
 
+    @Value("${com.multicampus.ex01.upload.path}")// import 시에 springframework으로 시작하는 Value
+    private String uploadPath;
+
     private final BoardService boardService;
 
 //    @GetMapping("/list")
@@ -45,19 +48,32 @@ public class BoardController {
 //
 //    }
 
+//    @GetMapping("/list")
+//    public void list(PageRequestDTO pageRequestDTO, Model model){
+//
+//        //PageResponseDTO<BoardDTO> responseDTO = boardService.list(pageRequestDTO);
+//
+//        PageResponseDTO<BoardListReplyCountDTO> responseDTO =
+//                boardService.listWithReplyCount(pageRequestDTO);
+//
+//        log.info(responseDTO);
+//
+//        model.addAttribute("responseDTO", responseDTO);
+//    }
+
+
     @GetMapping("/list")
     public void list(PageRequestDTO pageRequestDTO, Model model){
 
         //PageResponseDTO<BoardDTO> responseDTO = boardService.list(pageRequestDTO);
 
-        PageResponseDTO<BoardListReplyCountDTO> responseDTO =
-                boardService.listWithReplyCount(pageRequestDTO);
+        PageResponseDTO<BoardListAllDTO> responseDTO =
+                boardService.listWithAll(pageRequestDTO);
 
         log.info(responseDTO);
 
         model.addAttribute("responseDTO", responseDTO);
     }
-
 
 
     @GetMapping("/register")
@@ -139,12 +155,34 @@ public class BoardController {
     }
 
 
-    @PostMapping("/remove")
-    public String remove(Long bno, RedirectAttributes redirectAttributes) {
+//    @PostMapping("/remove")
+//    public String remove(Long bno, RedirectAttributes redirectAttributes) {
+//
+//        log.info("remove post.. " + bno);
+//
+//        boardService.remove(bno);
+//
+//        redirectAttributes.addFlashAttribute("result", "removed");
+//
+//        return "redirect:/board/list";
+//
+//    }
 
+
+    @PostMapping("/remove")
+    public String remove(BoardDTO boardDTO, RedirectAttributes redirectAttributes) {
+
+        Long bno  = boardDTO.getBno();
         log.info("remove post.. " + bno);
 
         boardService.remove(bno);
+
+        //게시물이 삭제되었다면 첨부 파일 삭제
+        log.info(boardDTO.getFileNames());
+        List<String> fileNames = boardDTO.getFileNames();
+        if(fileNames != null && fileNames.size() > 0){
+            removeFiles(fileNames);
+        }
 
         redirectAttributes.addFlashAttribute("result", "removed");
 
@@ -153,4 +191,28 @@ public class BoardController {
     }
 
 
+    public void removeFiles(List<String> files){
+
+        for (String fileName:files) {
+
+            Resource resource = new FileSystemResource(uploadPath + File.separator + fileName);
+            String resourceName = resource.getFilename();
+
+
+            try {
+                String contentType = Files.probeContentType(resource.getFile().toPath());
+                resource.getFile().delete();
+
+                //섬네일이 존재한다면
+                if (contentType.startsWith("image")) {
+                    File thumbnailFile = new File(uploadPath + File.separator + "s_" + fileName);
+                    thumbnailFile.delete();
+                }
+
+            } catch (Exception e) {
+                log.error(e.getMessage());
+            }
+
+        }//end for
+    }
 }

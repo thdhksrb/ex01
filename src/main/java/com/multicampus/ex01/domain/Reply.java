@@ -12,7 +12,7 @@ import javax.persistence.*;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@ToString(exclude = "board")          //Board 타입의 객체 참조를 board 라는 변수를 이용해서 참조하겠다.
+@ToString(exclude = "board")
 //@ToString
 public class Reply extends BaseEntity{
 
@@ -20,7 +20,7 @@ public class Reply extends BaseEntity{
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long rno;
 
-    @ManyToOne(fetch = FetchType.LAZY)  //하나의 Entity를 조회할때 연관관계에 있는 객체들을 어떻게 가져올것인지에 대한 설정값(연관관계 모든 Entity)
+    @ManyToOne(fetch = FetchType.LAZY)
     private Board board;
 
     private String replyText;
@@ -32,4 +32,5 @@ public class Reply extends BaseEntity{
     }
 
 }
+
 
